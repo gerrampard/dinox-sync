@@ -1,0 +1,17 @@
+{
+  "id": "dinox-sync",
+  "name": "Dinox 同步",
+  "version": "1.0.0",
+  "author": "saimax",
+  "description": "将 flyMD 文档同步到 Dinox 笔记软件",
+  "i18n": {
+    "en": {
+      "name": "Dinox Sync",
+      "description": "Sync flyMD documents to Dinox note-taking app"
+    }
+  },
+  "main": "main.js",
+  "minHostVersion": "0.3.0",
+  "homepage": "https://github.com/saimax/dinox-sync",
+  "repository": "https://github.com/saimax/dinox-sync"
+}
