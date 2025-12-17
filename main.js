@@ -218,22 +218,128 @@ export function activate(context) {
 }
 
 /**
- * 显示设置对话框
+ * 显示设置对话框 - 使用自定义 HTML 对话框
  */
 async function showSettingsDialog(context) {
   const currentToken = await context.storage.get('apiToken') || '';
 
-  const token = prompt(
-    'Dinox API Token\n\n' +
-    '请输入你的 Dinox API Token：\n' +
-    '（可在 Dinox App 设置中获取）',
-    currentToken
-  );
+  // 创建遮罩层
+  const overlay = document.createElement('div');
+  overlay.id = 'dinox-settings-overlay';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `;
 
-  if (token !== null) {
-    await context.storage.set('apiToken', token.trim());
+  // 创建对话框
+  const dialog = document.createElement('div');
+  dialog.id = 'dinox-settings-dialog';
+  dialog.style.cssText = `
+    background: var(--bg, #fff);
+    color: var(--fg, #333);
+    border-radius: 12px;
+    padding: 24px;
+    min-width: 360px;
+    max-width: 90%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  `;
+
+  dialog.innerHTML = `
+    <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">Dinox 同步设置</h3>
+    <p style="margin: 0 0 12px 0; font-size: 14px; opacity: 0.8;">
+      请输入你的 Dinox API Token（可在 Dinox App 设置中获取）
+    </p>
+    <input 
+      type="text" 
+      id="dinox-api-token-input"
+      value="${currentToken.replace(/"/g, '&quot;')}"
+      placeholder="输入 API Token..."
+      style="
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border, #ddd);
+        border-radius: 8px;
+        font-size: 14px;
+        background: var(--input-bg, #f5f5f5);
+        color: var(--fg, #333);
+        box-sizing: border-box;
+        outline: none;
+      "
+    />
+    <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-end;">
+      <button id="dinox-cancel-btn" style="
+        padding: 8px 20px;
+        border: 1px solid var(--border, #ddd);
+        border-radius: 6px;
+        background: transparent;
+        color: var(--fg, #333);
+        cursor: pointer;
+        font-size: 14px;
+      ">取消</button>
+      <button id="dinox-save-btn" style="
+        padding: 8px 20px;
+        border: none;
+        border-radius: 6px;
+        background: #4f46e5;
+        color: white;
+        cursor: pointer;
+        font-size: 14px;
+      ">保存</button>
+    </div>
+  `;
+
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
+
+  // 聚焦输入框
+  const input = document.getElementById('dinox-api-token-input');
+  input.focus();
+  input.select();
+
+  // 关闭对话框函数
+  const closeDialog = () => {
+    overlay.remove();
+  };
+
+  // 保存并关闭
+  const saveAndClose = async () => {
+    const token = input.value.trim();
+    await context.storage.set('apiToken', token);
+    closeDialog();
     context.ui.notice('API Token 已保存', 'ok', 2000);
-  }
+  };
+
+  // 绑定事件
+  document.getElementById('dinox-cancel-btn').onclick = closeDialog;
+  document.getElementById('dinox-save-btn').onclick = saveAndClose;
+
+  // ESC 关闭
+  const handleKeydown = (e) => {
+    if (e.key === 'Escape') {
+      closeDialog();
+      document.removeEventListener('keydown', handleKeydown);
+    } else if (e.key === 'Enter') {
+      saveAndClose();
+      document.removeEventListener('keydown', handleKeydown);
+    }
+  };
+  document.addEventListener('keydown', handleKeydown);
+
+  // 点击遮罩关闭
+  overlay.onclick = (e) => {
+    if (e.target === overlay) {
+      closeDialog();
+    }
+  };
 }
 
 /**
