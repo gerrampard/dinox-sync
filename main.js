@@ -146,7 +146,7 @@ async function syncAsMarkdown(context) {
   });
 
   try {
-    const response = await context.http.fetch(`${DINOX_API_BASE}/api/openapi/markdown/import/`, {
+    const response = await context.http.fetch(`${DINOX_API_BASE}/api/openapi/markdown/import`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
