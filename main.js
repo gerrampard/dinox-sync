@@ -125,7 +125,7 @@ async function syncToDinox(context) {
 }
 
 /**
- * 使用 Markdown 格式同步（flomo 兼容模式）
+ * 使用 Markdown 格式同步（简单模式 - 不解析元数据）
  */
 async function syncAsMarkdown(context) {
   const apiToken = await context.storage.get('apiToken');
@@ -140,20 +140,27 @@ async function syncAsMarkdown(context) {
     return;
   }
 
+  // 简单模式：使用时间戳作为标题，不解析标签
+  const now = new Date();
+  const title = `flyMD 笔记 ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+
   const notificationId = context.ui.showNotification('正在同步到 Dinox...', {
     type: 'info',
     duration: 0
   });
 
   try {
-    const response = await context.http.fetch(`${DINOX_API_BASE}/api/openapi/markdown/import`, {
+    // 使用 createNote API（已验证可用）
+    const response = await context.http.fetch(`${DINOX_API_BASE}/api/openapi/createNote`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': apiToken
       },
       body: JSON.stringify({
-        content: content
+        title: title,
+        content: content,  // 发送完整内容，包括 Front Matter
+        tags: []
       })
     });
 
