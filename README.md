@@ -1,19 +1,19 @@
 # Dinox Sync for flyMD
 
-将 flyMD 文档同步到 Dinox 笔记软件的扩展插件。
+将 flyMD 文档同步到 [Dinox](https://dinox.info/) 笔记软件的扩展插件。Dinox 是一款支持卡片盒笔记法的知识管理工具。
 
 ## 功能
 
 - 📤 **一键同步** - 将当前文档同步到 Dinox
 - 🏷️ **自动提取标题和标签** - 从 Front Matter 解析 `title` 和 `tags`
-- 📝 **Markdown 模式** - 兼容 flomo 的纯 Markdown 导入
+- 📝 **Markdown 模式** - 简单模式，整个文档直接发送
 
 ## 安装
 
 在 flyMD 中：
 
 1. 点击菜单栏「扩展」按钮
-2. 输入：`saimax/dinox-sync`
+2. 输入：`gerrampard/dinox-sync`
 3. 点击「安装」
 
 ## 配置
